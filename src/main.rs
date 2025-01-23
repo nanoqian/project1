@@ -20,7 +20,23 @@ fn main() -> eframe::Result {
     eframe::run_native(
         "eframe template",
         native_options,
-        Box::new(|cc| Ok(Box::new(project1::Project1::new(cc)))),
+        Box::new(|cc| {
+            let mut fonts = egui::FontDefinitions::default();
+
+            fonts.font_data.insert("UKaiTW".to_owned(),
+                std::sync::Arc::new(
+                    egui::FontData::from_static(include_bytes!("../assets/UKaiTW.otf"))
+                )
+            );
+
+            // Add font as last fallback:
+            fonts.families.get_mut(&egui::FontFamily::Proportional).unwrap()
+                .push("UKaiTW".to_owned());
+
+            cc.egui_ctx.set_fonts(fonts);
+
+            Ok(Box::new(project1::Project1::new(cc)))
+        }),
     )
 }
 
