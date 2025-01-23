@@ -1,3 +1,6 @@
+use std::fs;
+use rfd::FileDialog; // Correct file dialog import
+
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
@@ -18,9 +21,6 @@ impl Default for Project1 {
 impl Project1 {
     /// Called once before the first frame.
     pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
-        // This is also where you can customize the look and feel of egui using
-        // `cc.egui_ctx.set_visuals` and `cc.egui_ctx.set_fonts`.
-
         let mut fonts = egui::FontDefinitions::default();
 
         fonts.font_data.insert("UKaiTW".to_owned(),
@@ -29,14 +29,12 @@ impl Project1 {
             )
         );
 
-        // Add font as last fallback:
         fonts.families.get_mut(&egui::FontFamily::Proportional).unwrap()
             .push("UKaiTW".to_owned());
 
         cc.egui_ctx.set_fonts(fonts);
 
         // Load previous app state (if any).
-        // Note that you must enable the `persistence` feature for this to work.
         if let Some(storage) = cc.storage {
             return eframe::get_value(storage, eframe::APP_KEY).unwrap_or_default();
         }
@@ -53,9 +51,6 @@ impl eframe::App for Project1 {
 
     /// Called each time the UI needs repainting, which may be many times per second.
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        // Put your widgets into a `SidePanel`, `TopBottomPanel`, `CentralPanel`, `Window` or `Area`.
-        // For inspiration and more examples, go to https://emilk.github.io/egui
-
         egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
             // The top panel is often a good place for a menu bar:
 
@@ -64,6 +59,18 @@ impl eframe::App for Project1 {
                 let is_web = cfg!(target_arch = "wasm32");
                 if !is_web {
                     ui.menu_button("File", |ui| {
+                        if ui.button("Open").clicked() {
+                            // Open file dialog (if on a desktop platform)
+                            if let Some(path) = FileDialog::new().pick_file() {
+                                // Read the contents of the file
+                                if let Ok(contents) = fs::read_to_string(path) {
+                                    self.text_buffer = contents; // Load into text buffer
+                                } else {
+                                    // Handle file read error
+                                    eprintln!("Failed to read file");
+                                }
+                            }
+                        }
                         if ui.button("Quit").clicked() {
                             ctx.send_viewport_cmd(egui::ViewportCommand::Close);
                         }
@@ -76,11 +83,13 @@ impl eframe::App for Project1 {
         });
 
         egui::CentralPanel::default().show(ctx, |ui| {
-            // The central panel the region left after adding TopPanel's and SidePanel's
-            
-            ui.add_sized(ui.available_size(), 
-            egui::TextEdit::multiline(&mut self.text_buffer));
-            
+            // Add a scroll area to enable scrolling if the text overflows
+            egui::ScrollArea::vertical().show(ui, |ui| {
+                ui.add_sized(ui.available_size(), 
+                    egui::TextEdit::multiline(&mut self.text_buffer)
+                        .font(egui::TextStyle::Body.resolve(&ui.style()).clone())
+                );
+            });
         });
     }
 }
