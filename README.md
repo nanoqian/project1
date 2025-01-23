@@ -1,2 +1,5 @@
 Some hobby project written in rust. 
-Using vulkan
+
+it's going to be notepad but it can open big files.
+
+just some text editor because why not?

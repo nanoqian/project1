@@ -4,11 +4,14 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-anyhow = "1.0.95"
-cgmath = "0.18.0"
+egui = "0.30"
+eframe = { version = "0.30", default-features = false, features = [
+    "accesskit",     # Make egui compatible with screen readers. NOTE: adds a lot of dependencies.
+    "default_fonts", # Embed the default egui fonts.
+    "glow",          # Use the glow rendering backend. Alternative: "wgpu".
+    "persistence",   # Enable restoring app state when restarting the app.
+    "wayland",       # To support Linux (and CI)
+] }
+env_logger = "0.11.6"
 log = "0.4.25"
-png = "0.17.16"
-pretty_env_logger = "0.5.0"
-thiserror = "2.0.11"
-vulkanalia = "0.26.0"
-winit = "0.30.8"
+serde = { version = "1", features = ["derive"] }
