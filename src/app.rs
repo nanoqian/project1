@@ -21,6 +21,20 @@ impl Project1 {
         // This is also where you can customize the look and feel of egui using
         // `cc.egui_ctx.set_visuals` and `cc.egui_ctx.set_fonts`.
 
+        let mut fonts = egui::FontDefinitions::default();
+
+        fonts.font_data.insert("UKaiTW".to_owned(),
+            std::sync::Arc::new(
+                egui::FontData::from_static(include_bytes!("../assets/UKaiTW.otf"))
+            )
+        );
+
+        // Add font as last fallback:
+        fonts.families.get_mut(&egui::FontFamily::Proportional).unwrap()
+            .push("UKaiTW".to_owned());
+
+        cc.egui_ctx.set_fonts(fonts);
+
         // Load previous app state (if any).
         // Note that you must enable the `persistence` feature for this to work.
         if let Some(storage) = cc.storage {
