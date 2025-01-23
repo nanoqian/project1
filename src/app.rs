@@ -3,18 +3,14 @@
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
 pub struct Project1 {
     // Example stuff:
-    label: String,
-
-    #[serde(skip)] // This how you opt-out of serialization of a field
-    value: f32,
+    pub text_buffer: String,
 }
 
 impl Default for Project1 {
     fn default() -> Self {
         Self {
             // Example stuff:
-            label: "Hello World!".to_owned(),
-            value: 2.7,
+            text_buffer: String::new(),
         }
     }
 }
@@ -67,12 +63,10 @@ impl eframe::App for Project1 {
 
         egui::CentralPanel::default().show(ctx, |ui| {
             // The central panel the region left after adding TopPanel's and SidePanel's
-            ui.heading("eframe template");
-
-            ui.horizontal(|ui| {
-                ui.label("Write something: ");
-                ui.text_edit_singleline(&mut self.label);
-            });
+            
+            ui.add_sized(ui.available_size(), 
+            egui::TextEdit::multiline(&mut self.text_buffer));
+            
         });
     }
 }
