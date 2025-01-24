@@ -7,6 +7,7 @@ use rfd::FileDialog; // Correct file dialog import
 pub struct Project1 {
     pub text_buffer: String,
     pub file_path : Option<std::path::PathBuf>,
+    pub is_window_pinned : bool
 }
 
 impl Default for Project1 {
@@ -14,6 +15,7 @@ impl Default for Project1 {
         Self {
             text_buffer: String::new(),
             file_path: None,
+            is_window_pinned : false
         }
     }
 }
@@ -99,6 +101,17 @@ impl eframe::App for Project1 {
                 }
 
                 egui::widgets::global_theme_preference_buttons(ui);
+
+                // Pin button
+                ui.checkbox(&mut self.is_window_pinned, "Pin window");
+
+                if self.is_window_pinned == true {
+                    ctx.send_viewport_cmd(egui::ViewportCommand::WindowLevel(egui::WindowLevel::AlwaysOnTop));
+                }
+                else{
+                    ctx.send_viewport_cmd(egui::ViewportCommand::WindowLevel(egui::WindowLevel::Normal));
+                }
+                
             });
         });
 
