@@ -102,7 +102,7 @@ impl eframe::App for Project1 {
 
                 egui::widgets::global_theme_preference_buttons(ui);
 
-                // Pin button
+                // Pin checkbox
                 ui.checkbox(&mut self.is_window_pinned, "Pin window");
 
                 if self.is_window_pinned == true {
