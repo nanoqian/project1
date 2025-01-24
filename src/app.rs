@@ -5,15 +5,15 @@ use rfd::FileDialog; // Correct file dialog import
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
 pub struct Project1 {
-    // Example stuff:
     pub text_buffer: String,
+    pub file_path : Option<std::path::PathBuf>,
 }
 
 impl Default for Project1 {
     fn default() -> Self {
         Self {
-            // Example stuff:
             text_buffer: String::new(),
+            file_path: None,
         }
     }
 }
@@ -63,11 +63,31 @@ impl eframe::App for Project1 {
                             // Open file dialog (if on a desktop platform)
                             if let Some(path) = FileDialog::new().pick_file() {
                                 // Read the contents of the file
-                                if let Ok(contents) = fs::read_to_string(path) {
+                                if let Ok(contents) = fs::read_to_string(&path) {
                                     self.text_buffer = contents; // Load into text buffer
+                                    self.file_path = Some(path);
                                 } else {
                                     // Handle file read error
                                     eprintln!("Failed to read file");
+                                }
+                            }
+                        }
+                        if ui.button("Save").clicked() {
+                            if let None = self.file_path {
+                                self.file_path = FileDialog::new().save_file();
+                            }
+                            if let Some(path) = &self.file_path {
+                                if let Err(_) = fs::write(&path, &self.text_buffer) {
+                                    eprintln!("Failed to write to file");
+                                }
+                            }
+                        }
+                        if ui.button("Save As").clicked() {
+                            if let Some(path) = FileDialog::new().save_file() {
+                                if let Ok(()) = fs::write(&path, &self.text_buffer) {
+                                    self.file_path = Some(path);
+                                } else {
+                                    eprintln!("Failed to write to file");
                                 }
                             }
                         }
