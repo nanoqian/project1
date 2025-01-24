@@ -103,7 +103,7 @@ impl eframe::App for Project1 {
                 egui::widgets::global_theme_preference_buttons(ui);
 
                 // Pin checkbox
-                ui.checkbox(&mut self.is_window_pinned, "Pin window");
+                ui.checkbox(&mut self.is_window_pinned, "Pin");
 
                 if self.is_window_pinned == true {
                     ctx.send_viewport_cmd(egui::ViewportCommand::WindowLevel(egui::WindowLevel::AlwaysOnTop));
